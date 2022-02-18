@@ -9,32 +9,20 @@ namespace ConsoleApp12
     {
         static void Main()
         {
-            Console.Write("Введите кол-во уровней: ");
-            int levels = int.Parse(Console.ReadLine());
-            try
-            {
-                while (levels < 1)
-                {
-                    Console.Write("Кол-во уровней должно быть целым и больше 0. Повторите ввод: ");
-                    levels = int.Parse(Console.ReadLine());
-                }
+            int numberOfLevels = 4;
+            Console.WriteLine($"Кол-во уровней: {numberOfLevels}");
 
-                //генерирует систему уровней
-                List<Level> system = new List<Level>();
-                for (int i = 1; i <= levels; i++)
-                    system.Add(new Level(i));
+            //генерирует систему уровней
+            List<Level> system = new List<Level>();
+            for (int i = 1; i <= numberOfLevels; i++)
+                system.Add(new Level(i));
 
-                //выводит на экран всю систему для наглядности
-                PrintAllValues(system);
+            //выводит на экран всю систему для наглядности
+            PrintAllValues(system);
 
-                //выводит максимальную сумму в системе
-                Console.WriteLine($"\nМаксимальная сумма: {GetMaxSum(system)}");
-            }
-            catch (Exception e)
-            {
-                Console.WriteLine(e.Message);
-                throw;
-            }
+            //выводит максимальную сумму в системе
+            Console.WriteLine($"\nМаксимальная сумма: {GetSum(system)}");
+
             Console.ReadLine();
         }
         /// <summary>
@@ -42,10 +30,32 @@ namespace ConsoleApp12
         /// </summary>
         /// <param name="levelSystem">Система</param>
         /// <returns>Сумма</returns>
-        static public double GetMaxSum(List<Level> levelSystem)
+        static public int GetSum(List<Level> levelSystem)
         {
-            return levelSystem.Select(x => x.ArrayLevel.Max()).Sum();
+            Console.Write("Результаты всех маршрутов: ");
+            List<int> result = new List<int>();
+            int sum = levelSystem.ElementAt(0).ArrayLevel.ElementAt(0);
+
+            for (int i = 0; i < 2; i++)
+            {
+                sum += levelSystem.ElementAt(1).ArrayLevel.ElementAt(i);
+                for (int j = i; j < 2 + i; j++)
+                {
+                    sum += levelSystem.ElementAt(2).ArrayLevel.ElementAt(j);
+                    for (int k = j; k < 2 + j; k++)
+                    {
+                        sum += levelSystem.ElementAt(3).ArrayLevel.ElementAt(k);
+                        Console.Write(sum + " ");
+                        result.Add(sum);
+                        sum -= levelSystem.ElementAt(3).ArrayLevel.ElementAt(k);
+                    }
+                    sum -= levelSystem.ElementAt(2).ArrayLevel.ElementAt(j);
+                }
+                sum -= levelSystem.ElementAt(1).ArrayLevel.ElementAt(i);
+            }
+            return result.Max();
         }
+
         /// <summary>
         /// Вывести на экран всю систему для наглядности
         /// </summary>
@@ -55,7 +65,7 @@ namespace ConsoleApp12
             int index = 1;
             foreach (var el in levelSystem)
             {
-                Console.WriteLine($"[Уровень {index}. Max значение: {el.ArrayLevel.Max()}]: " + string.Join(" ", el.ArrayLevel.Select(x => x).ToList()));
+                Console.WriteLine($"[Уровень {index}]: " + new string(' ', levelSystem.Count - index) + string.Join(" ", el.ArrayLevel.Select(x => x).ToList()));
                 index++;
             }
         }
@@ -90,7 +100,7 @@ namespace ConsoleApp12
         {
             for (int i = 0; i < _numberOfLevel; i++)
             {
-                ArrayLevel.Add(new Random().Next(0, 100));
+                ArrayLevel.Add(new Random().Next(0, 10));
                 Thread.Sleep(1);
             }
             return ArrayLevel;
