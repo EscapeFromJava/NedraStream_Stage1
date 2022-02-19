@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 
-namespace ConsoleApp12
+namespace Stage1
 {
     internal class Program
     {
@@ -25,19 +25,25 @@ namespace ConsoleApp12
 
             Console.ReadLine();
         }
+
         /// <summary>
         /// Получить максимальную сумму в системе
         /// </summary>
         /// <param name="levelSystem">Система</param>
-        /// <returns>Сумма</returns>
-
-        static public int GetVolume(List<Level> levelSystem, int row = 0, int column = 0, int total = 0)
+        /// <param name="level">Ряд</param>
+        /// <param name="volume">Колонка</param>
+        /// <param name="sum"></param>
+        /// <returns></returns>
+        static public int GetVolume(List<Level> levelSystem, int level = 0, int volume = 0, int sum = 0)
         {
-            if (row == levelSystem.Count - 1)
-                return total += levelSystem[row].ArrayLevel[column];
-            int temp1 = GetVolume(levelSystem, row + 1, column, total + levelSystem[row].ArrayLevel[column]);
-            int temp2 = GetVolume(levelSystem, row + 1, column + 1, total + levelSystem[row].ArrayLevel[column]);
-            return temp1 >= temp2 ? temp1 : temp2;
+            if (level == levelSystem.Count - 1)
+                return sum += levelSystem[level].ArrayLevel[volume];
+            var temp = new int[] 
+            { 
+                (GetVolume(levelSystem, level + 1, volume, sum + levelSystem[level].ArrayLevel[volume])),
+                (GetVolume(levelSystem, level + 1, volume + 1, sum + levelSystem[level].ArrayLevel[volume]))
+            };
+            return temp.Max();
         }
 
         /// <summary>
