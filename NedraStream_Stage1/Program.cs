@@ -9,8 +9,8 @@ namespace ConsoleApp12
     {
         static void Main()
         {
-            int numberOfLevels = 4;
-            Console.WriteLine($"Кол-во уровней: {numberOfLevels}");
+            Console.Write("Введите кол-во уровней: ");
+            int numberOfLevels = int.Parse(Console.ReadLine());
 
             //генерирует систему уровней
             List<Level> system = new List<Level>();
@@ -20,8 +20,8 @@ namespace ConsoleApp12
             //выводит на экран всю систему для наглядности
             PrintAllValues(system);
 
-            //выводит максимальную сумму в системе
-            Console.WriteLine($"\nМаксимальная сумма: {GetSum(system)}");
+            //выводит максимальную сумму
+            Console.WriteLine($"Max сумма: " + GetVolume(system));
 
             Console.ReadLine();
         }
@@ -30,34 +30,18 @@ namespace ConsoleApp12
         /// </summary>
         /// <param name="levelSystem">Система</param>
         /// <returns>Сумма</returns>
-        static public int GetSum(List<Level> levelSystem)
-        {
-            Console.Write("Результаты всех маршрутов: ");
-            List<int> result = new List<int>();
-            int sum = levelSystem.ElementAt(0).ArrayLevel.ElementAt(0);
 
-            for (int i = 0; i < 2; i++)
-            {
-                sum += levelSystem.ElementAt(1).ArrayLevel.ElementAt(i);
-                for (int j = i; j < 2 + i; j++)
-                {
-                    sum += levelSystem.ElementAt(2).ArrayLevel.ElementAt(j);
-                    for (int k = j; k < 2 + j; k++)
-                    {
-                        sum += levelSystem.ElementAt(3).ArrayLevel.ElementAt(k);
-                        Console.Write(sum + " ");
-                        result.Add(sum);
-                        sum -= levelSystem.ElementAt(3).ArrayLevel.ElementAt(k);
-                    }
-                    sum -= levelSystem.ElementAt(2).ArrayLevel.ElementAt(j);
-                }
-                sum -= levelSystem.ElementAt(1).ArrayLevel.ElementAt(i);
-            }
-            return result.Max();
+        static public int GetVolume(List<Level> levelSystem, int row = 0, int column = 0, int total = 0)
+        {
+            if (row == levelSystem.Count - 1)
+                return total += levelSystem[row].ArrayLevel[column];
+            int temp1 = GetVolume(levelSystem, row + 1, column, total + levelSystem[row].ArrayLevel[column]);
+            int temp2 = GetVolume(levelSystem, row + 1, column + 1, total + levelSystem[row].ArrayLevel[column]);
+            return temp1 >= temp2 ? temp1 : temp2;
         }
 
         /// <summary>
-        /// Вывести на экран всю систему для наглядности
+        /// Вывод на экран всей системы
         /// </summary>
         /// <param name="levelSystem">Система</param>
         static public void PrintAllValues(List<Level> levelSystem)
@@ -65,7 +49,7 @@ namespace ConsoleApp12
             int index = 1;
             foreach (var el in levelSystem)
             {
-                Console.WriteLine($"[Уровень {index}]: " + new string(' ', levelSystem.Count - index) + string.Join(" ", el.ArrayLevel.Select(x => x).ToList()));
+                Console.WriteLine($"[Уровень {index}]: \t" + new string(' ', levelSystem.Count - index) + string.Join(" ", el.ArrayLevel.Select(x => x).ToList()));
                 index++;
             }
         }
@@ -76,11 +60,11 @@ namespace ConsoleApp12
     class Level
     {
         /// <summary>
-        /// Содержит массив значений, в зависимости от номера уровня
+        /// Массив значений, в зависимости от номера уровня
         /// </summary>
         public List<int> ArrayLevel = new List<int>();
         /// <summary>
-        /// Содержит номер уровня
+        /// Номер уровня
         /// </summary>
         private int _numberOfLevel;
         /// <summary>
@@ -100,7 +84,7 @@ namespace ConsoleApp12
         {
             for (int i = 0; i < _numberOfLevel; i++)
             {
-                ArrayLevel.Add(new Random().Next(0, 10));
+                ArrayLevel.Add(new Random().Next(0, 5));
                 Thread.Sleep(1);
             }
             return ArrayLevel;
